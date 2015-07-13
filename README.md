@@ -1,2 +1,14 @@
-# Hierarchical_bayes_workshop_must
-Workshop given at Uni Zurich July 17 2015 - MuST
+# Hierarchical Modeling with JAGS - MuST Workshop
+
+Workshop given at Uni Zurich July 17 2015 - MuST
+
+This repository contains all the files you will need to participate in the workshop. 
+
+## Preparation
+
+Please download [JAGS](sourceforge.net/projects/mcmc-jags/files/JAGS/3.x/) onto your computer. 
+
+Please also have a current version of [R](stat.ethz.ch/CRAN/)
+
+## Book recommondations
+
