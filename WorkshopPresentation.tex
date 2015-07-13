@@ -1,0 +1,417 @@
+\documentclass[hyperref={pdfpagelabels=false},unknownkeysallowed]{beamer}
+\usepackage{graphicx}
+\usepackage{lmodern}
+%\usepackage{epstopdf}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usetheme{Boadilla}
+\usepackage{amsmath}
+\usepackage{url}
+
+\setbeamertemplate{note page}[plain]
+
+
+\def\approxprop{%
+  \def\p{%
+    \setbox0=\vbox{\hbox{$\propto$}}%
+    \ht0=0.6ex \box0 }%
+  \def\s{%
+    \vbox{\hbox{$\sim$}}%
+  }%
+  \mathrel{\raisebox{0.7ex}{%
+      \mbox{$\underset{\s}{\p}$}%
+    }}%
+}
+
+%\setbeameroption{show notes}
+%\setbeameroption{show only notes}
+\setbeameroption{hide notes}
+
+\title{Bayesian Hierarchical Modeling in JAGS}  
+\author{Marcel Niklaus} 
+\date{\today} 
+
+
+\begin{document}
+	
+\begin{frame}
+\titlepage
+\end{frame} 
+
+
+
+\begin{frame}
+	\frametitle{Not content of this talk}
+	\begin{itemize}
+	\item Bayesian Hypothesis test
+	\item Model comparison
+	\end{itemize} 
+	\note{}
+\end{frame}
+
+\section{Why Bayes? What Bayes?}
+% % % % % % % % % % % % % % % % % % % % % % % %
+\begin{frame}
+	\frametitle{Why Bayes}
+	\begin{itemize}
+	\item We are actually interested in the probability of a model given data
+	\item p-values are based on probability of (unobserved) data given model (conceptually hard) 
+	\pause
+		\item Surprise exercise; think of a situation you are interested in data given model! 
+	\end{itemize} 
+	\note{In the Bayesian approach we condition on
+	the data at hand to assess the plausibility of a hypothesis (via Bayes Rule), while the
+frequentist approach conditions on a hypothesis to assess the plausibility of the data (or more extreme data sets), with another step of reasoning required to either reject or fail to reject hypotheses.}
+\end{frame}
+
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+\begin{frame}
+\frametitle{General Principles of Bayesian Analysis}
+\begin{itemize}
+	\item Uncertainty (of parameter estimate) is quantified by probability (distributions)
+	\item Observed data is used to update the \textbf{prior} information to yield  \textbf{posterior} information
+	\item Bayesian workflow: set prior beliefs $\Rightarrow$ get data $\Rightarrow$ summarize posterior beliefs
+
+\end{itemize} 
+\note{}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Formal Bayes Theorem}
+\begin{center}
+\includegraphics[scale=0.2]{lego.pdf} 
+\end{center}
+\begin{itemize}
+\item Bayes rule is rooted in conditional probability and is uncontroversial.
+
+\item $P(Red|Yellow) = P(Yellow|Red) * P(Red) / P(Yellow)$
+
+\item $P(Red|Yellow) = (4/20) * (20/60) / (6/60)$
+
+\item $2 / 3 = 1/5 * 1/3 * 10$
+\end{itemize} 
+\end{frame}
+
+\begin{frame}
+\frametitle{Formal Bayes Theorem (only slide with many formulas)}
+
+\begin{itemize}
+\item Bayes Theorem tells us how to rationally revise prior beliefs in light of the data to yield posterior beliefs.
+
+\item $P(R|Y) = P(Y|R) * \frac{P(R)}{P(Y)}$
+
+\item Yellow = data, red = hypothesis $\theta$
+
+\item $p(\theta|data)=\frac{p(data|\theta)*p(\theta)}{p(data)}$
+
+\item $posterior = \frac{likelihood * prior}{marginal~likelihood}$
+
+\item $p(\theta|D)\approxprop{p(D|\theta) * p(\theta)}$
+
+\item Posterior is the likelihood weighted by the prior
+
+\note{ posterior = 2/3, probability of our red model given the yellow data, likelihood is data driven, it's the probability of our yellow data given our red hypothesis, 1/5, times the prior, which is in this case the probability of our red hypothesis = 1/3, divided by the probability of our yellow data, 1/10.}
+
+\note{ marginal likelihood $p(D)$ is only to ensure $\sum = 1$. As a result, this term is often dropped and the Bayes Theorem is written as "proportional to"}
+
+
+
+
+
+\end{itemize}
+\note{ In the frequentist tradition, the assumption is that θ is unknown
+but has a fixed value that we wish to estimate. In Bayesian statistical
+inference, θ is considered unknown and should be viewed as a random
+variable possessing a probability distribution that reflects our uncertainty about the true value of θ.}
+\end{frame}
+
+
+\section{See Bayes}
+
+\begin{frame}
+\frametitle{Let's play a game: Rock Paper Scissor}
+
+\url{http://87.106.45.173:3838/felix/BayesLessons/BayesianLesson1.Rmd}
+
+\begin{itemize}
+\item 6 Trials of Rock Paper Scissor
+\item Let's ignore the ties! 
+\end{itemize} 
+\end{frame}
+% % % % % % % % % % % % % % % % % % % % % % % %
+
+\begin{frame}
+\frametitle{Prior}
+Pick your Prior: Who is going to win? 
+\begin{itemize}
+\item $\theta$: the rate with which the female wins
+\item $\theta = 1$: female always wins
+\item $\theta = 0$: male always wins
+\item $\theta = 0.5$: equal odds
+\item Uncertainty (of parameter estimate) is quantified by probability (distributions)
+\item We assume our beliefs can be represented by a beta distribution
+\item A beta distribution is constraint to lie within 0-1 (perfect for proportion)
+\end{itemize}
+\note{}
+\end{frame}
+
+\begin{frame}
+Pick your Prior: Who is going to win? 
+\begin{itemize}
+\item $\theta \sim Beta(1,1)$: Uninformed prior: Do you think (before seeing the data) that it is equally likely that $\theta = 0.01$ and $\theta = 0.5$? 
+
+\item $\theta \sim Beta (3,3)$ : Slightly informed prior
+\end{itemize}
+
+We are now ready to play: Go!
+\note{}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Likelihood}
+The likelihood is the workhorse of Bayesian inference. It represents the data part. 
+\begin{itemize}
+\item What's the likelihood we observe the data (y wins given n trials)  given the parameter $\theta$
+\item Probability density of the data, considered as a function of $\theta$
+\item The likelihood of a hypothesis ($\theta$), $L(H|data)$, conditions on the data as if they are fixed while allowing the hypotheses (our parameter $ \theta$ to vary
+\item Binomial likelihood: $L(p|n,y)={n \choose y} p^y (1-p)^{n-y}$
+
+\item \url{http://shiny.stat.calpoly.edu/MLE_Binomial/}
+\end{itemize}
+\note{}
+\end{frame}
+
+
+\begin{frame}
+After playing
+\begin{itemize}
+\item The posterior distribution summarizes our state of uncertainty about the true value of $\theta$ after having observed the game. 
+\end{itemize}
+\note{}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Markov chain Monte Carlo}
+\begin{itemize}
+\item Posterior distribution = Prior distribution $*$ Likelihood density
+\item Analytical calculation of posterior only possible for simple models (high-dimensionality integration problem)
+\item Draw samples from posterior and summarize the distribution of those samples (it works!)
+\item Metropolis-Hastings algorithm and the Gibbs sampler
+\item JAGS WinBugs and STAN can do this for you
+\item Algorithm to approximate an unknown distribution
+
+\end{itemize}
+\note{Specifically, at each iteration, the algorithm picks a candidate for the next sample value based on the current sample value. Then, with some probability, the candidate is either accepted (in which case the candidate value is used in the next iteration) or rejected (in which case the candidate value is discarded, and current value is reused in the next iteration)−the probability of acceptance is determined by comparing the values of the function f(x) of the current and candidate sample values with respect to the desired distribution P(x).}
+\end{frame}
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+\section{Easy Example in JAGS}
+
+\begin{frame}
+	\frametitle{JAGS}
+	\begin{itemize}
+	    \item $\leftarrow$ is~equal~to: $y \leftarrow a+b$
+	    \item $\sim$ is distributed as..
+	    \item Binomial likelihood: $y \sim dbin(\theta,nAttempts)$
+		\item Normal likelihood: $ y \sim dnorm(mean,precision)$
+		\item $precision = 1/ Var$
+		\item Loop: for (i in 1:3)\{bla[i]=1+i\}
+		\item bla = 2,3,4, bla[2] = 3┘
+	\end{itemize} 
+	\note{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Soccer Shootout}
+Let's estimate soccer players' ability to score a penalty in a world cup! 
+\begin{itemize}
+\item Open Soccer.R in your R console
+\item Set your working directory (line 8)
+\item Jags model: ShootoutAbility.txt
+\item What is their ability $\theta$, [0-1]?
+\item $Y\theta$ Prior: remember the game
+\end{itemize}
+\note{}
+\end{frame}
+
+
+\begin{frame}
+Convergence: Has the MCMC Gibbs sampler converged on posterior (after starting from random values)
+\begin{itemize}
+\item Trace plot: "tight horizontal band"
+\item Autocorrelation plot: "Chains should forget previous visits with time": drop off quickly
+\item Gelman-Rubin-Brooks diagnostic: Between and within chain variance: 1 indicated convergence (F-value); less than 1.2. See gelman.diag [CODA]
+\item Geweke test of non-stationarity; Heidelberger-Welch test etc.
+\end{itemize}
+\note{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Soccer Shootout: Afrika vs. Europa and America}
+\begin{itemize}
+\item Jags model: ShootoutAbilityDifference.txt
+\item theta[Cindex[i]] can either be theta[1], or theta[2]
+\end{itemize}
+\note{}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Hierarchical Modeling}
+\begin{frame}
+\frametitle{Hierarchical Modeling}
+
+\begin{itemize}
+\item With nested data (e.g. data for participants is organized on more than 1 level), a multilevel model is appropriate. 
+
+\item The classic: students grouped in classes, which nest in school districts, which in turn nest in states. 
+
+\item All Bayesian Models are hierarchical because every parameter has a prior. 
+\end{itemize} 
+
+\note{}
+\end{frame}
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+
+\begin{frame}
+\frametitle{Easy IQ example: IQ measurements}
+\begin{itemize}
+    \item Scenario: We measure some IQs
+	\item $y \sim N(\mu,\tau)$
+    \item $\mu \sim N(100,0.004)$ 
+    \item $\tau \sim G(0.001,0.001)$
+    \end{itemize} 
+\note{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Hierarchical Mean: Random Groups}
+\begin{itemize}
+\item $y \sim N(\mu[G],\tau)$
+\item $\mu[G] \sim N(100,0.004})$
+\item $tau \sim G(0.001,0.001)$
+\end{itemize} 
+\note{}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Linear Mixed Models}
+
+\begin{itemize}
+\item Linear Regression model
+\item Mixed because it includes coefficients that vary over group (random: participants, items) and some that don't (fixed, treatment group). 
+\item Random Effects: zero mean restriction $N(0,\omega)$)
+\item Random intercepts model: random intercept, fixed slope
+\item Random intercepts and slope model: random intercept, random slope
+\end{itemize} 
+\centering In Bayesian Statistics, all parameters are random, i.e. drawn from an overarching distribution!  
+\note{}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Easy IQ example: IQ regressed on math grade}
+\begin{itemize}
+\item $y \sim N(\mu,\tau)$
+\item $\mu <- ~~x0 + x1 * math$
+\end{itemize} 
+\note{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Easy IQ example: IQ regressed on math grade; Random Intercept}
+\begin{itemize}
+\item $y \sim N(\mu[i],\tau)$
+\item $\mu[i] <- x0[G] + x1 * math$
+\item for all groups j: $x0[j] \sim dnorm(100,0.0044)$
+\item $x1 \sim dnorm(0,0.001)$
+\end{itemize} 
+\note{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Easy IQ example: IQ regressed on math grade; Random Intercept and Slope}
+\begin{itemize}
+\item $y \sim N(\mu,\tau)$
+\item $mu <- x0[G] + x1[G] * math$
+\item for all groups j: $x0[j] \sim dnorm(100,0.0044)$
+\item for all groups j: $x1[j] \sim dnorm(0,0.01)$
+\end{itemize} 
+\note{}
+\end{frame}
+
+\section{Linear Mixed Effects model in JAGS}
+
+\begin{frame}
+\frametitle{Simple linear regression}
+Let's estimate soccer player's ability to score a penalty in a world cup! 
+\begin{itemize}
+\item Open Exam${\_}$ple.R in your R console
+\item Set your working directory (line 7)
+\item Jags model: ExamSimple.txt
+\end{itemize}
+\note{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Random intercept model}
+\begin{itemize}
+\item b0[school[i]]
+\item for all schools: $b0[j] \sim dnorm(school.b0,school.tau) $
+\item $school.b0 \sim dnorm(0,.0001)$
+\end{itemize}
+\note{}
+\end{frame}
+
+\begin{frame}
+\frametitle{Random intercept and slope model}
+\begin{itemize}
+\item $b0[school[i]]+b1[school[i]]*lrt[i]$
+\item for all schools: $b0[j] \sim dnorm(school.b0,school.tau) $
+\item for all schools: $b1[j] \sim dnorm(school.b1,school.tau.b1)$
+\item school.b0 $\sim$ dnorm(0,.0001)
+\item school.b1 $\sim$ dnorm(0,.0001)
+\end{itemize}
+\note{}
+\end{frame}
+
+\section{Linear Mixed Effects model in JAGS}
+
+\begin{frame}
+\frametitle{Multi-Level Models}
+Covariates that capture the way groups vary are included
+
+\begin{itemize}
+\item Level 1: Regression for London Reading Test
+\item Level 2: Group Level with covariates: Regression for entry score
+\end{itemize} - Ein
+\note{}
+\end{frame}
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+%\begin{frame}
+%\frametitle{Multi-Level Models}
+%Covariates that capture the way groups vary are included
+%
+%\begin{itemize}
+%\item c0: intercept
+%\item c1: effect of entry (L2) on intercept
+%\item d0: effect of LRT 
+%\item d1: effect of entry on LRT effect
+%\end{itemize} 
+%\note{}
+%\end{frame}
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+\end{document}

@@ -1,0 +1,34 @@
+model{
+ 
+  # Level 1: 
+  
+  for (i in 1:ndata){ #loop through all data points
+	  score[i]~ dnorm(mu.hat[i],tau)
+	  mu.hat[i]<-b0[school[i]]+b1[school[i]]*lrt[i]
+	  }
+  
+  # Level 2
+	  
+	 for (j in 1:nschools){ #loop through all schools
+	  b0[j] ~ dnorm(school.b0[j],school.tau.b0) 
+	  b1[j] ~ dnorm(school.b1[j],school.tau.b1) 
+	  
+	  school.b0[j]<-c0+c1*entry[j]
+	  school.b1[j]<-d0+d1*entry[j]
+     }
+
+
+tau <- 1/pow(sigma,2)
+sigma ~ dunif(0,100)
+
+c0 ~ dnorm(0,.0001)
+c1 ~ dnorm(0,.0001)
+d0 ~ dnorm(0,.0001)
+d1 ~ dnorm(0,.0001)
+
+school.tau.b0 <- 1/pow(sigma.school.b0,2)
+sigma.school.b0 ~ dunif(0,100)
+
+school.tau.b1 <- 1/pow(sigma.school.b1,2)
+sigma.school.b1 ~ dunif(0,100)
+}

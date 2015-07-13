@@ -1,0 +1,33 @@
+model{
+ 
+  # Likelihood: 
+  
+  # Level 1: 
+  for (i in 1:ndata){ #loop through all data points
+	  score[i]~ dnorm(mu1[school[i]],lambda1) 
+	  }
+  
+  # Priors, Level 2
+	  
+	 for (j in 1:nschools){ #loop through all schools
+	  mu1[j] ~ dnorm(b0[j]+b1*entry[j],lambda2) 
+     }
+
+  # Priors
+  sigma1 ~ dunif(0,10)
+  lambda1 <- 1/pow(sigma1,2)
+  
+  sigma2 ~ dunif(0,10)
+  lambda2 <- 1/pow(sigma2,2)
+  
+  for (j in 1:nschools){
+  b0[j]~dnorm(mu.intercept,lambda.intercept)
+  }
+  
+  b1~dnorm(0,.001) #common slope
+  
+  mu.intercept ~dnorm(0,0.01)
+  lambda.intercept <- 1/pow(sigma.intercept,2)
+  sigma.intercept ~ dunif(0,10) 
+
+}

@@ -1,0 +1,23 @@
+model{
+ 
+  # Likelihood: 
+  
+  for (i in 1:ndata){ #loop through all data points
+	  score[i]~ dnorm(mu.hat[i],tau)
+	  mu.hat[i]<-b0[school[i]]+b1*lrt[i]
+	  }
+  
+  # Priors
+	  
+	 for (j in 1:nschools){ #loop through all schools
+	  b0[j] ~ dnorm(school.b0,school.tau) 
+     }
+
+  b1 ~ dnorm(0,.0001)
+  tau <- 1/pow(sigma,2)
+  sigma ~ dunif(0,100)
+
+school.b0 ~ dnorm(0,.0001)
+school.tau <- 1/pow(sigma.school,2)
+sigma.school ~ dunif(0,100)
+}

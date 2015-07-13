@@ -1,0 +1,13 @@
+model{
+#Likelihood
+  for( i in 1:n)
+    {
+      Goals[i]~dbin(theta[Cindex[i]],Attempts[i]) #creates a 2-element vector
+    }
+
+#priors
+theta[1] ~ dbeta(5,5)
+theta[2] ~ dbeta(5,5)
+
+difference <- theta[1]-theta[2]
+}

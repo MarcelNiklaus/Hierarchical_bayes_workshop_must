@@ -1,0 +1,10 @@
+model{
+#Likelihood
+  for( i in 1:n)
+    {
+      Goals[i]~dbin(theta,Attempts[i])
+    }
+
+#Priors
+theta ~ dbeta(5,5)
+}
