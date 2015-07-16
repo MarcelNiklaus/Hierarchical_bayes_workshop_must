@@ -4,9 +4,8 @@
 
 require(rjags)
 require(coda)
-source('HDIofMCMC.R')
 setwd("C:/Dropbox/Uni/Bayes Workshop")
-
+source('HDIofMCMC.R')
 
 ######################################################################
 # Load data (don't forget to set wd)
@@ -73,7 +72,7 @@ codaSamples = coda.samples( jagsModel , variable.names=parameters ,
 
 # Traceplot and Autocorrleation
 
-traceplot(codaSamples) #is it nicely "furry"
+traceplot(codaSamples) #is it a hairy caterpillar?
 autocorr.plot(codaSamples)
 
 # Gelman Rubin 

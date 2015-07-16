@@ -1,6 +1,6 @@
 # Hierarchical Modeling with JAGS - MuST Workshop
 
-\Workshop given at Uni Zurich July 17 2015 - MuST
+Workshop given at Uni Zurich July 17 2015 - MuST
 
 This repository contains all the files you will need to participate in the workshop. 
 
