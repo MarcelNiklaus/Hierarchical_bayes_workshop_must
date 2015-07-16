@@ -10,5 +10,3 @@ Please download [JAGS](http://sourceforge.net/projects/mcmc-jags/files/JAGS/3.x/
 
 Please also have a current version of [R](http://stat.ethz.ch/CRAN/)
 
-## Book recommondations
-
